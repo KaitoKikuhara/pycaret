@@ -20,10 +20,11 @@ pycaret.regression, Moez Ali <moez.ali@queensu.ca>
 from setuptools import setup
 from setuptools import find_packages
 
-# def readme():
-#     with open('README.md') as f:
-#         README = f.read()
-#     return README
+def readme():
+    # with open('README.md') as f:
+    #     README = f.read()
+    README = ' '
+    return README
 
 
 setup(
