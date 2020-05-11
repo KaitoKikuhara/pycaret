@@ -56,7 +56,7 @@ def get_data(path, dataset, save_copy=False, profile = False):
 
     data = pd.read_csv(complete_address)
 
-    #create a copy for pandas profiler
+    # create a copy for pandas profiler
     data_for_profiling = data.copy()
 
     if save_copy:
@@ -73,6 +73,6 @@ def get_data(path, dataset, save_copy=False, profile = False):
             display(pf)
 
         else:
-            display(data.head())
-
+            pass
+            # display(data.head())
         return data

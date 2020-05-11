@@ -2395,26 +2395,27 @@ def ensemble_model(estimator,
 
             if y.value_counts().count() > 2:
                 sc = 0
-                recall = metrics.recall_score(ytest,pred_, average='macro')
-                precision = metrics.precision_score(ytest,pred_, average = 'weighted')
-                f1 = metrics.f1_score(ytest,pred_, average='weighted')
+                recall = metrics.recall_score(ytest, pred_, average='macro')
+                precision = metrics.precision_score(ytest, pred_, average='weighted')
+                f1 = metrics.f1_score(ytest, pred_, average='weighted')
 
             else:
                 try:
-                    sc = metrics.roc_auc_score(ytest,pred_prob)
-                except:
+                    sc = metrics.roc_auc_score(ytest, pred_prob)
+                except Exception as E:
                     sc = 0
-                recall = metrics.recall_score(ytest,pred_)
-                precision = metrics.precision_score(ytest,pred_)
-                f1 = metrics.f1_score(ytest,pred_)
+                    print(E)
+                recall = metrics.recall_score(ytest, pred_)
+                precision = metrics.precision_score(ytest, pred_)
+                f1 = metrics.f1_score(ytest, pred_)
 
-            kappa = metrics.cohen_kappa_score(ytest,pred_)
-            score_acc = np.append(score_acc,sca)
-            score_auc = np.append(score_auc,sc)
-            score_recall = np.append(score_recall,recall)
-            score_precision = np.append(score_precision,precision)
-            score_f1 =np.append(score_f1,f1)
-            score_kappa =np.append(score_kappa,kappa)
+            kappa = metrics.cohen_kappa_score(ytest, pred_)
+            score_acc = np.append(score_acc, sca)
+            score_auc = np.append(score_auc, sc)
+            score_recall = np.append(score_recall, recall)
+            score_precision = np.append(score_precision, precision)
+            score_f1 = np.append(score_f1, f1)
+            score_kappa = np.append(score_kappa, kappa)
 
         progress.value += 1
 
@@ -2425,7 +2426,7 @@ def ensemble_model(estimator,
 
         '''
 
-        fold_results = pd.DataFrame({'Accuracy':[sca], 'AUC': [sc], 'Recall': [recall],
+        fold_results = pd.DataFrame({'Accuracy': [sca], 'AUC': [sc], 'Recall': [recall],
                                      'Prec.': [precision], 'F1': [f1], 'Kappa': [kappa]}).round(round)
         master_display = pd.concat([master_display, fold_results],ignore_index=True)
         fold_results = []
@@ -2671,27 +2672,27 @@ def plot_model(estimator,
 
     '''
 
-    #pre-load libraries
+    # pre-load libraries
     import pandas as pd
     import ipywidgets as ipw
     from IPython.display import display, HTML, clear_output, update_display
 
-    #progress bar
+    # progress bar
     progress = ipw.IntProgress(value=0, min=0, max=5, step=1 , description='Processing: ')
     display(progress)
 
-    #ignore warnings
+    # ignore warnings
     import warnings
     warnings.filterwarnings('ignore')
 
-    #general dependencies
+    # general dependencies
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
 
     progress.value += 1
 
-    #defining estimator as model locally
+    # defining estimator as model locally
     model = estimator
 
     progress.value += 1
@@ -3121,25 +3122,25 @@ def compare_models(blacklist = None,
     available_estimators = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada',
                             'gbc', 'lda', 'et', 'xgboost', 'lightgbm', 'catboost']
 
-    if blacklist != None:
+    if blacklist is not None:
         for i in blacklist:
             if i not in available_estimators:
                 sys.exit('(Value Error): Estimator Not Available. Please see docstring for list of available estimators.')
 
-    #checking fold parameter
+    # checking fold parameter
     if type(fold) is not int:
         sys.exit('(Type Error): Fold parameter only accepts integer value.')
 
-    #checking round parameter
+    # checking round parameter
     if type(round) is not int:
         sys.exit('(Type Error): Round parameter only accepts integer value.')
 
-    #checking sort parameter
+    # checking sort parameter
     allowed_sort = ['Accuracy', 'Recall', 'Precision', 'F1', 'AUC', 'Kappa']
     if sort not in allowed_sort:
         sys.exit('(Value Error): Sort method not supported. See docstring for list of available parameters.')
 
-    #checking optimize parameter for multiclass
+    # checking optimize parameter for multiclass
     if y.value_counts().count() > 2:
         if sort == 'AUC':
             sys.exit('(Type Error): AUC metric not supported for multiclass problems. See docstring for list of other optimization parameters.')
@@ -3150,13 +3151,13 @@ def compare_models(blacklist = None,
 
     '''
 
-    #pre-load libraries
+    # pre-load libraries
     import pandas as pd
     import time, datetime
     import ipywidgets as ipw
     from IPython.display import display, HTML, clear_output, update_display
 
-    #progress bar
+    # progress bar
     if blacklist is None:
         len_of_blacklist = 0
     else:
@@ -3171,21 +3172,21 @@ def compare_models(blacklist = None,
     master_display = pd.DataFrame(columns=['Model', 'Accuracy','AUC','Recall', 'Prec.', 'F1', 'Kappa'])
     display(progress)
 
-    #display monitor
+    # display monitor
     timestampStr = datetime.datetime.now().strftime("%H:%M:%S")
-    monitor = pd.DataFrame( [ ['Initiated' , '. . . . . . . . . . . . . . . . . .', timestampStr ],
-                             ['Status' , '. . . . . . . . . . . . . . . . . .' , 'Loading Dependencies' ],
-                             ['Estimator' , '. . . . . . . . . . . . . . . . . .' , 'Compiling Library' ],
-                             ['ETC' , '. . . . . . . . . . . . . . . . . .',  'Calculating ETC'] ],
-                              columns=['', ' ', '   ']).set_index('')
+    monitor = pd.DataFrame([['Initiated', '. . . . . . . . . . . . . . . . . .', timestampStr],
+                            ['Status', '. . . . . . . . . . . . . . . . . .', 'Loading Dependencies'],
+                            ['Estimator', '. . . . . . . . . . . . . . . . . .', 'Compiling Library'],
+                            ['ETC', '. . . . . . . . . . . . . . . . . .',  'Calculating ETC']],
+                            columns=['', ' ', '   ']).set_index('')
 
-    display(monitor, display_id = 'monitor')
+    display(monitor, display_id='monitor')
 
     display_ = display(master_display, display_id=True)
     display_id = display_.display_id
 
 
-    #ignore warnings
+    # ignore warnings
     import warnings
     warnings.filterwarnings('ignore')
 
@@ -3229,7 +3230,7 @@ def compare_models(blacklist = None,
 
     progress.value += 1
 
-    #defining sort parameter (making Precision equivalent to Prec. )
+    # defining sort parameter (making Precision equivalent to Prec. )
     if sort == 'Precision':
         sort = 'Prec.'
     else:
@@ -3241,13 +3242,13 @@ def compare_models(blacklist = None,
     '''
 
     monitor.iloc[1,1:] = 'Loading Estimator'
-    update_display(monitor, display_id = 'monitor')
+    update_display(monitor, display_id='monitor')
 
     '''
     MONITOR UPDATE ENDS
     '''
 
-    #creating model object
+    # creating model object
     lr = LogisticRegression(random_state=seed)
     knn = KNeighborsClassifier()
     nb = GaussianNB()
@@ -4449,7 +4450,7 @@ def tune_model(estimator = None,
 
         fold_results = pd.DataFrame({'Accuracy':[sca], 'AUC': [sc], 'Recall': [recall],
                                      'Prec.': [precision], 'F1': [f1], 'Kappa': [kappa]}).round(round)
-        master_display = pd.concat([master_display, fold_results],ignore_index=True)
+        master_display = pd.concat([master_display, fold_results], ignore_index=True)
         fold_results = []
 
         '''
@@ -4493,7 +4494,7 @@ def tune_model(estimator = None,
         '''
 
         if verbose:
-            update_display(master_display, display_id = display_id)
+            update_display(master_display, display_id=display_id)
 
         '''
 
@@ -4503,18 +4504,18 @@ def tune_model(estimator = None,
 
     progress.value += 1
 
-    mean_acc=np.mean(score_acc)
-    mean_auc=np.mean(score_auc)
-    mean_recall=np.mean(score_recall)
-    mean_precision=np.mean(score_precision)
-    mean_f1=np.mean(score_f1)
-    mean_kappa=np.mean(score_kappa)
-    std_acc=np.std(score_acc)
-    std_auc=np.std(score_auc)
-    std_recall=np.std(score_recall)
-    std_precision=np.std(score_precision)
-    std_f1=np.std(score_f1)
-    std_kappa=np.std(score_kappa)
+    mean_acc = np.mean(score_acc)
+    mean_auc = np.mean(score_auc)
+    mean_recall = np.mean(score_recall)
+    mean_precision = np.mean(score_precision)
+    mean_f1 = np.mean(score_f1)
+    mean_kappa = np.mean(score_kappa)
+    std_acc = np.std(score_acc)
+    std_auc = np.std(score_auc)
+    std_recall = np.std(score_recall)
+    std_precision = np.std(score_precision)
+    std_f1 = np.std(score_f1)
+    std_kappa = np.std(score_kappa)
 
     avgs_acc = np.append(avgs_acc, mean_acc)
     avgs_acc = np.append(avgs_acc, std_acc)
@@ -4773,18 +4774,18 @@ def blend_models(estimator_list = 'All',
 
     progress.value += 1
 
-    score_auc =np.empty((0,0))
-    score_acc =np.empty((0,0))
-    score_recall =np.empty((0,0))
-    score_precision =np.empty((0,0))
-    score_f1 =np.empty((0,0))
-    score_kappa =np.empty((0,0))
-    avgs_auc =np.empty((0,0))
-    avgs_acc =np.empty((0,0))
-    avgs_recall =np.empty((0,0))
-    avgs_precision =np.empty((0,0))
-    avgs_f1 =np.empty((0,0))
-    avgs_kappa =np.empty((0,0))
+    score_auc = np.empty((0,0))
+    score_acc = np.empty((0,0))
+    score_recall = np.empty((0,0))
+    score_precision = np.empty((0,0))
+    score_f1 = np.empty((0,0))
+    score_kappa = np.empty((0,0))
+    avgs_auc = np.empty((0,0))
+    avgs_acc = np.empty((0,0))
+    avgs_recall = np.empty((0,0))
+    avgs_precision = np.empty((0,0))
+    avgs_f1 = np.empty((0,0))
+    avgs_kappa = np.empty((0,0))
     avg_acc = np.empty((0,0))
     avg_auc = np.empty((0,0))
     avg_recall = np.empty((0,0))
@@ -5493,18 +5494,18 @@ def stack_models(estimator_list,
 
     kf = StratifiedKFold(fold, random_state=seed) #capturing fold requested by user
 
-    score_auc =np.empty((0,0))
-    score_acc =np.empty((0,0))
-    score_recall =np.empty((0,0))
-    score_precision =np.empty((0,0))
-    score_f1 =np.empty((0,0))
-    score_kappa =np.empty((0,0))
-    avgs_auc =np.empty((0,0))
-    avgs_acc =np.empty((0,0))
-    avgs_recall =np.empty((0,0))
-    avgs_precision =np.empty((0,0))
-    avgs_f1 =np.empty((0,0))
-    avgs_kappa =np.empty((0,0))
+    score_auc = np.empty((0,0))
+    score_acc = np.empty((0,0))
+    score_recall = np.empty((0,0))
+    score_precision = np.empty((0,0))
+    score_f1 = np.empty((0,0))
+    score_kappa = np.empty((0,0))
+    avgs_auc = np.empty((0,0))
+    avgs_acc = np.empty((0,0))
+    avgs_recall = np.empty((0,0))
+    avgs_precision = np.empty((0,0))
+    avgs_f1 = np.empty((0,0))
+    avgs_kappa = np.empty((0,0))
 
     progress.value += 1
 
@@ -5527,10 +5528,10 @@ def stack_models(estimator_list,
 
         progress.value += 1
 
-        Xtrain,Xtest = data_X.iloc[train_i], data_X.iloc[test_i]
-        ytrain,ytest = data_y.iloc[train_i], data_y.iloc[test_i]
+        Xtrain, Xtest = data_X.iloc[train_i], data_X.iloc[test_i]
+        ytrain, ytest = data_y.iloc[train_i], data_y.iloc[test_i]
 
-        model.fit(Xtrain,ytrain)
+        model.fit(Xtrain, ytrain)
 
         try:
             pred_prob = model.predict_proba(Xtest)
@@ -5538,10 +5539,10 @@ def stack_models(estimator_list,
         except:
             pass
         pred_ = model.predict(Xtest)
-        sca = metrics.accuracy_score(ytest,pred_)
+        sca = metrics.accuracy_score(ytest, pred_)
         try:
-            sc = metrics.roc_auc_score(ytest,pred_prob)
-        except:
+            sc = metrics.roc_auc_score(ytest, pred_prob)
+        except Exception as E:
             sc = 0
 
         if y.value_counts().count() > 2:
@@ -5570,9 +5571,9 @@ def stack_models(estimator_list,
 
         '''
 
-        fold_results = pd.DataFrame({'Accuracy':[sca], 'AUC': [sc], 'Recall': [recall],
+        fold_results = pd.DataFrame({'Accuracy': [sca], 'AUC': [sc], 'Recall': [recall],
                                      'Prec.': [precision], 'F1': [f1], 'Kappa': [kappa]}).round(round)
-        master_display = pd.concat([master_display, fold_results],ignore_index=True)
+        master_display = pd.concat([master_display, fold_results], ignore_index=True)
         fold_results = []
 
 
@@ -6520,7 +6521,7 @@ def calibrate_model(estimator,
         from pycaret.datasets import get_data
         juice = get_data('juice')
         experiment_name = setup(data = juice,  target = 'Purchase')
-        dt_boosted = create_model('dt', ensemble = True, method = 'Boosting')
+        dt_boosted = create_model('dt', ble = True, method = 'Boosting')
 
         calibrated_dt = calibrate_model(dt_boosted)
 
@@ -7125,7 +7126,7 @@ def save_model(model, model_name, verbose=True):
 
     """
 
-    #ignore warnings
+    # ignore warnings
     import warnings
     warnings.filterwarnings('ignore')
 
@@ -7316,11 +7317,11 @@ def load_experiment(experiment_name):
 
     """
 
-    #ignore warnings
+    # ignore warnings
     import warnings
     warnings.filterwarnings('ignore')
 
-    #general dependencies
+    # general dependencies
     import joblib
     import pandas as pd
 
@@ -7338,8 +7339,6 @@ def load_experiment(experiment_name):
     display(ind)
 
     return exp
-
-
 
 def predict_model(estimator,
                   data=None,
